@@ -9,8 +9,7 @@ from ryu.lib.packet import ether_types
 
 from route import urls
 from helper import ofp_helper
-from config import service_sequence, service_priority
-
+from config import service_settings
 
 
 class App3(app_manager.RyuApp):
@@ -18,8 +17,8 @@ class App3(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(App3, self).__init__(*args, **kwargs)
-        self.apply_table_id = service_sequence.app3
-        self.service_priority = service_priority.app3
+        self.apply_table_id = service_settings.service_sequence['app2']
+        self.service_priority = service_settings.service_priority['app2']
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):

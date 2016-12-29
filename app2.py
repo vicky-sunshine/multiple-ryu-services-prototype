@@ -10,7 +10,7 @@ from ryu.lib.packet import ether_types
 
 from route import urls
 from helper import ofp_helper
-from config import table_sequence
+from config import service_sequence, service_priority
 
 
 class App2(app_manager.RyuApp):
@@ -18,7 +18,8 @@ class App2(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(App2, self).__init__(*args, **kwargs)
-        self.apply_table_id = table_sequence.app2
+        self.apply_table_id = service_sequence.app2
+        self.service_priority = service_priority.app2
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -28,4 +29,4 @@ class App2(app_manager.RyuApp):
 
         match = parser.OFPMatch()
         actions = [parser.OFPActionSetField(eth_dst='AA:AA:AA:AA:AA:AA')]
-        ofp_helper.add_flow(datapath, 0, match, actions, 0, self.apply_table_id)
+        ofp_helper.add_flow(datapath, self.apply_table_id, self.service_priority, match, actions)

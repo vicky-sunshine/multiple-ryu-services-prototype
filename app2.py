@@ -29,4 +29,7 @@ class App2(app_manager.RyuApp):
 
         match = parser.OFPMatch()
         actions = [parser.OFPActionSetField(eth_dst='AA:AA:AA:AA:AA:AA')]
-        ofp_helper.add_flow(datapath, self.apply_table_id, self.service_priority, match, actions)
+        next_table = self.apply_table_id + 1
+        instructions = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions),
+                        parser.OFPInstructionGotoTable(next_table)]
+        ofp_helper.add_flow(datapath, self.apply_table_id, self.service_priority, match, instructions)

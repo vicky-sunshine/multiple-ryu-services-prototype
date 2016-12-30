@@ -1,11 +1,9 @@
-def add_flow(datapath, table_id, priority, match, actions,
+def add_flow(datapath, table_id, priority, match, instructions,
              idle_timeout=0, buffer_id=None):
     ofproto = datapath.ofproto
     parser = datapath.ofproto_parser
     next_table = table_id + 1
 
-    inst = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions),
-            parser.OFPInstructionGotoTable(next_table)]
     if buffer_id:
         mod = parser.OFPFlowMod(datapath=datapath,
                                 idle_timeout=idle_timeout,
@@ -13,18 +11,18 @@ def add_flow(datapath, table_id, priority, match, actions,
                                 priority=priority,
                                 match=match,
                                 table_id=table_id,
-                                instructions=inst)
+                                instructions=instructions)
     else:
         mod = parser.OFPFlowMod(datapath=datapath,
                                 idle_timeout=idle_timeout,
                                 priority=priority,
                                 match=match,
                                 table_id=table_id,
-                                instructions=inst)
+                                instructions=instructions)
     datapath.send_msg(mod)
 
 
-def del_flow(datapath, match, table_id, priority):
+def del_flow(datapath, table_id, priority, match):
     ofproto = datapath.ofproto
     parser = datapath.ofproto_parser
     mod = parser.OFPFlowMod(datapath=datapath,

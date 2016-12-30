@@ -17,8 +17,8 @@ class App3(app_manager.RyuApp):
 
     def __init__(self, *args, **kwargs):
         super(App3, self).__init__(*args, **kwargs)
-        self.apply_table_id = service_settings.service_sequence['app2']
-        self.service_priority = service_settings.service_priority['app2']
+        self.apply_table_id = service_settings.service_sequence['app3']
+        self.service_priority = service_settings.service_priority['app3']
 
     @set_ev_cls(ofp_event.EventOFPSwitchFeatures, CONFIG_DISPATCHER)
     def switch_features_handler(self, ev):
@@ -28,5 +28,7 @@ class App3(app_manager.RyuApp):
 
         match = parser.OFPMatch()
         actions = [parser.OFPActionOutput(2)]
-
-        ofp_helper.add_flow(datapath, self.apply_table_id, self.service_priority, match, actions)
+        next_table = self.apply_table_id + 1
+        instructions = [parser.OFPInstructionActions(ofproto.OFPIT_APPLY_ACTIONS, actions),
+                        parser.OFPInstructionGotoTable(next_table)]
+        ofp_helper.add_flow(datapath, self.apply_table_id, self.service_priority, match, instructions)
